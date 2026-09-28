@@ -26,12 +26,13 @@ function renderDuel() {
   sizeDuel();
   [0, 1].forEach(s => { renderMage(s); renderBoard(s); renderCauldron(s); renderInk(s); });
   renderHand(); renderPower(); renderEnd(); renderMid(); markTargets(); renderInfo();
+  if (G.tut) markCoach();
 }
 function renderMage(s) {
-  const P = G.p[s], L = lordOf(P), el = elOf('m' + s);
-  const tag = s === 1 ? `${P.champ ? 'Champion · ' : ''}Sworn to ${L.name}` : `Sworn to ${L.name}`;
+  const P = G.p[s], L = lordOf(P), el = elOf('m' + s), dummy = G.tut && s === 1;
+  const tag = dummy ? 'Wick’s training dummy' : s === 1 ? `${P.champ ? 'Champion · ' : ''}Sworn to ${L.name}` : `Sworn to ${L.name}`;
   const counts = s === 1 ? ` · ${plural(P.hand.length, 'card')}` : '';
-  el.innerHTML = `${portrait(L.el)}<div class="who"><b>${P.name}</b><small>${tag}${counts} · ${P.deck.length} in satchel</small></div>`
+  el.innerHTML = `${portrait(dummy ? 'neutral' : L.el)}<div class="who"><b>${P.name}</b><small>${tag}${counts} · ${P.deck.length} in satchel</small></div>`
     + `<div class="life">${P.blight ? `<span class="blt" title="Blight">${P.blight}</span>` : ''}${P.armor ? `<span class="arm">${ICON.shield}<b>${P.armor}</b></span>` : ''}`
     + `<b class="hpn${P.hp < P.maxHp ? ' hurt' : ''}">${Math.max(0, P.hp)}</b></div>`;
 }
@@ -58,7 +59,7 @@ function renderCauldron(s) {
   for (let i = 0; i < E.CAULDRON; i++) slots += P.cauldron[i] ? `<i class="rg full">${reagentSvg(P.cauldron[i])}</i>` : '<i class="rg"></i>';
   let line = '';
   if (s === 0) {
-    const known = id => save.recipes[id] || P.lord === 'lumi';
+    const known = id => save.recipes[id] || P.lord === 'lumi' || G.tut;
     if (rec) line = known(rec.id) ? `<b>${rec.n}</b> is ready` : 'Something is brewing…';
     else if (P.cauldron.length) {
       const h = E.recipeHints(P.cauldron, P.lord).filter(x => known(x.r.id))[0];
@@ -83,7 +84,7 @@ function renderHand() {
     const ok = E.canPlay(G, 0, h) && !busy;
     b.type = 'button';
     b.className = `card k-${c.k}${ok ? ' ok' : ''}${pick && pick.t === 'card' && pick.u === h.u ? ' pick' : ''}`;
-    b.dataset.u = h.u;
+    b.dataset.u = h.u; b.dataset.id = h.id;
     b.setAttribute('aria-label', `${c.n}, ${E.costOf(G, 0, c)} ink`);
     b.innerHTML = cardHtml(h.id, E.costOf(G, 0, c));
     const mid = (n - 1) / 2, off = i - mid;
@@ -114,7 +115,7 @@ function renderEnd() {
 function renderMid() {
   const t = $('turnTag'), mine = G.cur === 0;
   t.className = 'turn' + (mine ? ' mine' : '');
-  t.textContent = mine ? 'Your turn' : `${G.p[1].name.split(' ')[0] === 'The' ? G.p[1].name : G.p[1].name.split(' ')[0]}’s turn`;
+  t.textContent = mine ? 'Your turn' : G.tut ? 'Dummy’s turn' : `${G.p[1].name.split(' ')[0] === 'The' ? G.p[1].name : G.p[1].name.split(' ')[0]}’s turn`;
 }
 function targetsFor(p) {
   if (!p || G.cur !== 0) return [];
@@ -141,7 +142,7 @@ function brewLines(brew) {
   if (echo) out.push(`It happens ${echo + 1} times.`);
   if (chain) out.push(`Its damage jumps ${chain === 1 ? 'once' : chain + ' times'}.`);
   const rec = E.matchRecipe(brew);
-  if (rec) out.push(save.recipes[rec.id] || P.lord === 'lumi' ? `Makes <b>${rec.n}</b>: ${rec.t}` : 'This brew makes a recipe you haven’t found yet.');
+  if (rec) out.push(save.recipes[rec.id] || P.lord === 'lumi' || G.tut ? `Makes <b>${rec.n}</b>: ${rec.t}` : 'This brew makes a recipe you haven’t found yet.');
   if (brew.length === E.CAULDRON) out.push('A full brew draws you a card.');
   return `<p class="brew">${out.join(' ')}</p>`;
 }
@@ -182,6 +183,7 @@ function infoHtml() {
   }
   if (pick.t === 'look' && pick.r[0] === 'm') {
     const s = +pick.r[1], Q = G.p[s], L = lordOf(Q), ch = Q.champ && E.CHAMP[Q.champ];
+    if (G.tut && s === 1) return `<div class="ih"><b>${Q.name}</b><span>Wick’s training dummy</span></div><p class="it">${Math.max(0, Q.hp)} of ${Q.maxHp} health. It only knows how to summon Sprouts.</p>`;
     let x = `<div class="ih"><b>${Q.name}</b><span>Sworn to ${L.name}, ${L.title}</span></div>`;
     x += `<p class="it">${Math.max(0, Q.hp)} of ${Q.maxHp} health${Q.armor ? `, ${Q.armor} armor` : ''}.${s === 1 ? ` ${plural(Q.hand.length, 'card')} in hand.` : ''}</p><ul class="kw">`;
     x += `<li><b>${L.power.name}</b> (${L.power.cost} ink): ${L.power.text}</li>`;
@@ -196,7 +198,7 @@ function infoHtml() {
     if (!Q.cauldron.length) return x + `<p class="it">Empty. Reagents wait here until ${s === 0 ? 'you cast' : 'they cast'} a spell, then it pours them all in.</p>`;
     x += `<ul class="kw">${Q.cauldron.map(id => `<li><b>${E.CARDS[id].n}.</b> ${E.CARDS[id].t}</li>`).join('')}</ul>`;
     if (s === 0) {
-      const known = id => save.recipes[id] || Q.lord === 'lumi';
+      const known = id => save.recipes[id] || Q.lord === 'lumi' || G.tut;
       const hints = E.recipeHints(Q.cauldron, Q.lord).filter(h => known(h.r.id));
       if (hints.length) x += `<p class="brew">${hints.slice(0, 3).map(h => `<b>${h.r.n}</b> needs ${h.missing.map(id => E.CARDS[id].n).join(' + ')}.`).join(' ')}</p>`;
       const rec = E.matchRecipe(Q.cauldron);
@@ -269,10 +271,12 @@ function onDuelTap(e) {
 // ---------- doing things ----------
 async function doAction(a) {
   if (busy || !G || G.over) return;
+  if (G.tut && !tutAllows(a)) { tutNope(); return; }
   busy = true; pick = null;
   G.ev = [];
   const cardEl = a.k === 'play' ? document.querySelector(`#hand .card[data-u="${a.u}"]`) : null;
   const h = a.k === 'play' ? G.p[0].hand.find(x => x.u === a.u) : null;
+  if (G.tut) hideCoach();
   if (!E.apply(G, 0, a)) { busy = false; renderDuel(); return; }
   if (cardEl) await flyOut(cardEl, h && E.CARDS[h.id].k === 'R');
   if (a.k === 'pow') squash($('pow'));
@@ -281,6 +285,7 @@ async function doAction(a) {
   renderDuel();
   if (G.over) return finishDuel();
   saveRun('duel');
+  if (G.tut) coachAfter(a, h && E.CARDS[h.id].k);
   if (G.cur === 1) enemyTurn();
 }
 async function flyOut(el, toCauldron) {
@@ -297,7 +302,7 @@ async function enemyTurn() {
   busy = true; renderDuel();
   await sleep(550);
   for (let guard = 0; guard < 60 && G && G.cur === 1 && !G.over; guard++) {
-    const a = guard === 59 ? { k: 'end' } : E.aiChoose(G, 1);
+    const a = guard === 59 ? { k: 'end' } : G.tut ? tutEnemyMove() : E.aiChoose(G, 1);
     G.ev = [];
     E.apply(G, 1, a);
     await playEvents(G.ev); G.ev = [];
@@ -309,6 +314,7 @@ async function enemyTurn() {
   renderDuel();
   if (G.over) return finishDuel();
   saveRun('duel');
+  if (G.tut) coach('myTurn');
 }
 
 // ---------- animations for what the rules report ----------
@@ -446,6 +452,16 @@ function resumeDuel(g) {
 }
 function showPause() {
   if (!G || G.over) return;
+  if (G.tut) {
+    sheet(`<p class="evn">Practice duel</p><h2>Paused</h2><p>Wick will wait.</p>
+      <button class="btn" id="resumeBtn">Back to the duel</button>
+      <button class="btn ghost" id="howBtn2">How to play</button>
+      <button class="btn ghost" id="homeBtn">Leave the tutorial</button>`);
+    $('resumeBtn').onclick = closeSheet;
+    $('howBtn2').onclick = () => showHow(showPause);
+    $('homeBtn').onclick = () => { if (busy) return; closeSheet(); hideCoach(); G = null; renderTitle(); };
+    return;
+  }
   if (!busy) saveRun('duel');
   sheet(`<p class="evn">${E.PITS[run.pit].name} · pit ${run.pit + 1} of 5</p><h2>Paused</h2><p>Your duel is saved.</p>
     <button class="btn" id="resumeBtn">Back to the duel</button>

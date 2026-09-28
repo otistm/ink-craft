@@ -328,3 +328,27 @@ button{ appearance:none; font:inherit; color:inherit; background:none; border:0;
   .fam.tgt,.mage.tgt .por,#endBtn.glow,.fam .zz{ animation:none; }
   .card,.fam{ transition:none; }
 }
+
+/* ---------- the tutorial: Wick's tips ---------- */
+.coach{ position:fixed; left:16px; right:16px; z-index:26; display:none; max-width:440px; margin:0 auto; grid-template-columns:44px 1fr 30px; gap:10px; align-items:start;
+  background:var(--paper); border:2.5px solid var(--ink); border-radius:16px; box-shadow:4px 5px 0 var(--ink); padding:10px; text-align:left; pointer-events:none; }
+.coach.on{ display:grid; }
+.coach.top{ top:calc(env(safe-area-inset-top,0px) + 8px); }
+.coach.mid{ top:38%; }
+.coach .wick{ width:44px; height:44px; display:block; }
+.coach small{ display:block; font-size:11px; font-weight:800; color:var(--soft); }
+.coach p{ margin:2px 0 0; font-size:13.5px; font-weight:600; line-height:1.4; }
+.coach .linkbtn{ pointer-events:auto; font-size:12px; color:var(--soft); margin:4px 0 0 -4px; }
+.coach .ring svg{ width:28px; height:28px; display:block; transform:rotate(-90deg); }
+.coach .ring circle{ fill:none; stroke-width:2.5; }
+.coach .ring .track{ stroke:var(--ink); opacity:.15; }
+.coach .ring .prog{ stroke:var(--ink); stroke-dasharray:100; stroke-dashoffset:100; animation:fill var(--dur) linear forwards; }
+@keyframes fill{ to{ stroke-dashoffset:0; } }
+.coach .cx{ pointer-events:auto; width:30px; height:30px; border:2px solid var(--ink); border-radius:50%; background:var(--ink); display:grid; place-items:center; }
+.coach .cx svg{ width:14px; height:14px; stroke:var(--paper); stroke-width:3; stroke-linecap:round; }
+.coach-hi{ outline:3px solid var(--ink) !important; outline-offset:4px; animation:aim .9s ease-in-out infinite; }
+.pow.coach-hi,.caul.coach-hi,#endBtn.coach-hi{ opacity:1 !important; }
+.event.learn{ border-width:3px; box-shadow:6px 7px 0 var(--ink); }
+.event.learn .wick{ width:56px; height:56px; display:block; }
+.wick.big{ width:72px; height:72px; display:block; margin:0 auto 8px; }
+@media (prefers-reduced-motion: reduce){ .coach-hi{ animation:none; } }

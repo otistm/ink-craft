@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.2.0
+- A tutorial. New players see Learn to brew at the top of the home screen: a practice duel with Wick, keeper of the Undercroft, against his straw dummy.
+- Wick walks you through it one tip at a time: summon a familiar, attack, stir Ember and Salt into your cauldron, pour them into a Firebolt, and finish the dummy with the Wildfire recipe.
+- Each tip points at what to tap. Trying something else just gives the tip a shake.
+- It takes about 3 minutes and you can skip it any time. Afterwards you can replay it from the link next to How to play.
+- The tutorial never touches a gauntlet you have in progress.
+
 ## 0.1.0
 - First version. You're a mage duelling in the Undercroft, an arena deep underground.
 - Swear an oath to one of seven mage lords: Ignis the Reckless Pyromancer, Lumi the Guided Alchemist, Morrigan the Blight Weaver, Orin the Iron Sage, Ren the Arctic Witch, Sable the Void Whisperer or Volta the Storm Conductor. Your oath binds you to their element: only their cards and plain cards will answer you.
