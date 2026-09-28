@@ -1,0 +1,14 @@
+{
+  "name": "Ink Craft",
+  "short_name": "Ink Craft",
+  "description": "Swear an oath. Brew spells. Get trophies.",
+  "start_url": "/play/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#ffffff",
+  "theme_color": "#ffffff",
+  "icons": [
+    { "src": "/icons/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}

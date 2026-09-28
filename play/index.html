@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Ink Craft: swear an oath, brew spells, get trophies</title>
+<meta name="theme-color" content="#ffffff">
+<meta name="description" content="Swear an oath. Brew spells. Get trophies.">
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="icon" type="image/svg+xml" href="/icons/icon.svg">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Ink Craft">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,800;0,9..144,900;1,9..144,900&family=Figtree:wght@500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<section id="title" class="screen on">
+  <div class="home">
+    <h1 class="logo">Ink Craft</h1>
+    <p class="tag">Swear an oath. Brew spells. Get trophies.</p>
+    <p class="kick">Choose a mage lord to swear to</p>
+    <div class="events" id="lords"></div>
+    <p class="homestats" id="homeStats"></p>
+    <div class="foot-note">Best on a phone, held upright.</div>
+    <div class="ver" id="ver"></div>
+  </div>
+</section>
+
+<section id="intro" class="screen">
+  <div class="panel" id="introPanel"></div>
+</section>
+
+<section id="duel" class="screen">
+  <div class="side foe">
+    <div class="mage" id="m1" data-r="m1"></div>
+    <div class="row2">
+      <div class="ink small" id="ink1"></div>
+      <button class="caul small" id="c1" type="button" aria-label="Their cauldron"></button>
+    </div>
+  </div>
+  <div class="arena">
+    <div class="lane" id="b1"></div>
+    <div class="mid" id="mid">
+      <span class="turn" id="turnTag"></span>
+      <span class="log" id="log"></span>
+      <button id="pause" type="button" aria-label="Pause">
+        <svg viewBox="0 0 32 32" aria-hidden="true"><rect x="9" y="8" width="5" height="16" rx="1.5" fill="currentColor"/><rect x="18" y="8" width="5" height="16" rx="1.5" fill="currentColor"/></svg>
+      </button>
+    </div>
+    <div class="lane" id="b0"></div>
+  </div>
+  <div class="side me">
+    <div class="row1">
+      <div class="mage" id="m0" data-r="m0"></div>
+      <div class="ink" id="ink0"></div>
+    </div>
+    <div class="row2">
+      <button class="caul" id="c0" type="button" aria-label="Your cauldron"></button>
+      <button class="pow" id="pow" type="button"></button>
+      <button class="btn" id="endBtn" type="button">End turn</button>
+    </div>
+    <div class="info" id="info"></div>
+  </div>
+  <div class="hand" id="hand"></div>
+  <div class="reveal" id="reveal"></div>
+  <div class="banner" id="banner"></div>
+</section>
+
+<section id="spoils" class="screen">
+  <div class="shophead"><h2>Spoils</h2><button class="linkbtn" id="spoilSatchel">Your satchel</button></div>
+  <p class="sub" id="spoilNote"></p>
+  <div class="spoils" id="spoilList"></div>
+  <div class="shopbtns">
+    <button class="btn ghost" id="leaveSpoils">Leave them</button>
+    <button class="btn" id="takeBtn">Pick a card</button>
+  </div>
+</section>
+
+<div class="tip" id="tip" role="status"></div>
+<div class="veil" id="veil"><div class="panel" id="sheet"></div></div>
+
+<!-- Order matters: each script can only use what the scripts above it define while loading. main.js is always last. -->
+<script src="js/config.js"></script>
+<script src="js/engine.js"></script>
+<script src="js/art.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/duel.js"></script>
+<script src="js/screens.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>

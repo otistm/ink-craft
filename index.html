@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Ink Craft: swear an oath, brew spells, get trophies</title>
+<meta name="description" content="A minimal ink-drawn card game. Swear an oath to a mage lord, brew spells in your cauldron, and duel your way through the Undercroft.">
+<meta name="theme-color" content="#ffffff">
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="icon" type="image/svg+xml" href="/icons/icon.svg">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Ink Craft">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Ink Craft">
+<meta property="og:title" content="Ink Craft">
+<meta property="og:description" content="Swear an oath. Brew spells. Get trophies.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@1,9..144,900&family=Figtree:wght@600;800&display=swap" rel="stylesheet">
+<style>
+:root{--paper:#fff;--ink:#000;--soft:#5c5c5c;--display:"Fraunces",Georgia,serif;--ui:"Figtree",system-ui,-apple-system,"Segoe UI",sans-serif;color-scheme:light;box-sizing:border-box}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--paper:#fff;--ink:#000;--soft:#5c5c5c}}
+*,*::before,*::after{box-sizing:inherit}
+html,body{margin:0;min-height:100%;background:var(--paper);color:var(--ink);font-family:var(--ui)}
+canvas{position:fixed;inset:0;width:100%;height:100%;display:block;z-index:0}
+main{position:relative;z-index:1;min-height:100vh;min-height:100dvh;display:grid;place-items:end center;align-content:end;padding:24px 16px calc(env(safe-area-inset-bottom,0px) + 18px)}
+@media (min-aspect-ratio:1/1){main{place-items:center end;align-content:center;padding-right:6vw}}
+.card{width:min(420px,100%);background:var(--paper);border:2.5px solid var(--ink);border-radius:26px;box-shadow:7px 8px 0 var(--ink);padding:28px 24px 22px;text-align:center;
+  animation:in .8s cubic-bezier(.3,.7,.3,1) both .2s}
+@keyframes in{0%{opacity:0;transform:translateY(60px) scale(.8,1.2)}55%{opacity:1;transform:translateY(-8px) scale(1.04,.96)}78%{transform:translateY(2px) scale(.99,1.01)}100%{transform:none}}
+h1{font-family:var(--display);font-style:italic;font-weight:900;font-size:clamp(50px,14vw,74px);line-height:.95;margin:0;letter-spacing:-.01em}
+.tag{font-weight:800;font-size:17px;margin:12px 0 22px}
+.play{display:block;width:100%;background:var(--ink);color:var(--paper);text-decoration:none;border-radius:18px;padding:17px 20px;font-family:var(--display);font-style:italic;font-weight:900;font-size:30px;
+  border:2.5px solid var(--ink);transition:transform .22s cubic-bezier(.34,1.56,.64,1)}
+.play:hover{transform:translateY(-2px)}
+.play:active{transform:scale(1.04,.9)}
+.play:focus-visible{outline:3px solid var(--ink);outline-offset:4px}
+.feats{list-style:none;padding:0;margin:20px 0 4px;display:grid;gap:10px;text-align:left}
+.feats li{display:grid;grid-template-columns:30px 1fr;gap:10px;align-items:center;font-weight:600;font-size:14.5px;line-height:1.35}
+.feats svg{width:30px;height:30px}
+.feats b{font-weight:800}
+footer{margin-top:12px;font-size:12px;font-weight:600;color:var(--soft)}
+@media (prefers-reduced-motion:reduce){.card{animation:none}}
+</style>
+</head>
+<body>
+<canvas id="c" aria-hidden="true"></canvas>
+<main>
+  <div class="card">
+    <h1>Ink Craft</h1>
+    <p class="tag">Swear an oath. Brew spells. Get trophies.</p>
+    <a class="play" href="/play/">Play</a>
+    <ul class="feats">
+      <li><svg viewBox="0 0 48 48" aria-hidden="true"><g fill="#fff" stroke="#000" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round"><path d="M24 44q-14 0-14-14q0-12 10-22q0 10 6 12q-2-10 6-18q10 12 10 28q0 14-18 14z"/><path d="M24 44q-6 0-6-7q0-5 6-10q6 5 6 10q0 7-6 7z" fill="#000"/></g></svg><span><b>Seven mage lords.</b> Swear to one and you’re bound to their element.</span></li>
+      <li><svg viewBox="0 0 48 48" aria-hidden="true"><g fill="#fff" stroke="#000" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round"><path d="M4 16h40M9 16q-2 18 12 24h6q14-6 12-24"/><circle cx="18" cy="9" r="3"/><circle cx="28" cy="6" r="2.2"/><circle cx="33" cy="11" r="1.6" fill="#000"/></g></svg><span><b>Brew your spells.</b> Stir reagents into your cauldron and pour them into a spell. Find the recipes.</span></li>
+      <li><svg viewBox="0 0 40 44" aria-hidden="true"><g stroke="#000" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"><path d="M10 7H5c0 6 3 9 6.5 9.5M30 7h5c0 6-3 9-6.5 9.5" fill="none"/><path d="M10 4h20v9c0 7-4.5 11-10 11S10 20 10 13z" fill="#000"/><path d="M17 24h6v6h-6z" fill="#fff"/><path d="M11 31h18v6H11z" fill="#000"/></g></svg><span><b>Win the Undercroft.</b> Duel through five pits to the champion for each lord’s trophy.</span></li>
+    </ul>
+  </div>
+  <footer>Best on a phone, held upright.</footer>
+</main>
+<script>
+if('serviceWorker' in navigator&&location.protocol==='https:') navigator.serviceWorker.register('/sw.js').catch(()=>{});
+/* ---------- an ink cauldron bubbling, with the seven lords' sigils circling above it ---------- */
+(()=>{
+  const cv=document.getElementById('c'), ctx=cv.getContext('2d');
+  const still=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let W=0,H=0,D=1;
+  function resize(){ D=Math.min(2,devicePixelRatio||1); W=innerWidth; H=innerHeight; cv.width=W*D; cv.height=H*D; }
+  addEventListener('resize',resize); resize();
+  const SIG=[
+    'M24 44q-14 0-14-14q0-12 10-22q0 10 6 12q-2-10 6-18q10 12 10 28q0 14-18 14z',
+    'M24 14a10 10 0 1 0 0.01 0zM24 3v7M24 38v7M3 24h7M38 24h7',
+    'M11 23q0-16 13-16t13 16q0 7-4 9v7H15v-7q-4-2-4-9z',
+    'M6 14h28q0 8 8 8v5H31l-3 7h6v7H14v-7h6l-3-7Q6 27 6 14z',
+    'M24 4v40M6.7 14l34.6 20M41.3 14L6.7 34',
+    'M30 5a19 19 0 1 0 13 31A16 16 0 1 1 30 5z',
+    'M29 3L11 26h11l-5 19 20-25H26z'].map(d=>new Path2D(d));
+  const bubbles=Array.from({length:14},(_,i)=>({x:Math.random(),t:Math.random()*4,r:3+Math.random()*7}));
+  function pot(cx,cy,R,s){
+    ctx.lineJoin='round'; ctx.lineCap='round';
+    const body=()=>{ ctx.beginPath(); ctx.moveTo(cx-R*1.15,cy-R*.35); ctx.quadraticCurveTo(cx-R*1.25,cy+R*.95,cx,cy+R); ctx.quadraticCurveTo(cx+R*1.25,cy+R*.95,cx+R*1.15,cy-R*.35); ctx.closePath(); };
+    ctx.save(); ctx.translate(7,8); body(); ctx.fillStyle='#000'; ctx.fill(); ctx.restore();
+    body(); ctx.fillStyle='#fff'; ctx.fill(); ctx.lineWidth=2.6; ctx.strokeStyle='#000'; ctx.stroke();
+    // hatching on the shadow side
+    ctx.save(); body(); ctx.clip(); ctx.lineWidth=1.3; ctx.beginPath();
+    for(let x=cx+R*.25;x<cx+R*1.5;x+=6){ ctx.moveTo(x,cy+R*1.2); ctx.lineTo(x+R*.6,cy-R*.5); } ctx.stroke(); ctx.restore();
+    // the brew's surface
+    ctx.beginPath(); ctx.ellipse(cx,cy-R*.35,R*1.15,R*.22,0,0,Math.PI*2); ctx.fillStyle='#000'; ctx.fill(); ctx.lineWidth=2.6; ctx.stroke();
+    // legs
+    ctx.lineWidth=4; ctx.beginPath(); ctx.moveTo(cx-R*.6,cy+R*.9); ctx.lineTo(cx-R*.8,cy+R*1.25); ctx.moveTo(cx+R*.6,cy+R*.9); ctx.lineTo(cx+R*.8,cy+R*1.25); ctx.stroke();
+    // bubbles rising
+    bubbles.forEach(b=>{ const u=((s*.35+b.t)%4)/4, x=cx+(b.x-.5)*R*1.6+Math.sin(u*6+b.t)*6, y=cy-R*.4-u*R*1.6, r=b.r*(1-u*.5);
+      if(u<.95){ ctx.beginPath(); ctx.arc(x,y,r,0,Math.PI*2); ctx.fillStyle='#fff'; ctx.fill(); ctx.lineWidth=2; ctx.stroke(); } });
+  }
+  function sigil(i,x,y,sc,rot){
+    ctx.save(); ctx.translate(x,y); ctx.rotate(rot); ctx.scale(sc,sc); ctx.translate(-24,-24);
+    ctx.beginPath(); ctx.arc(24+3,24+3.5,25,0,Math.PI*2); ctx.fillStyle='#000'; ctx.fill();
+    ctx.beginPath(); ctx.arc(24,24,25,0,Math.PI*2); ctx.fillStyle=i===5?'#000':'#fff'; ctx.fill(); ctx.lineWidth=2.6/sc; ctx.strokeStyle='#000'; ctx.stroke();
+    ctx.fillStyle='#fff'; ctx.lineWidth=2.4/sc; ctx.lineJoin='round'; ctx.lineCap='round';
+    ctx.save(); ctx.translate(24,24); ctx.scale(.7,.7); ctx.translate(-24,-24); ctx.fill(SIG[i]); ctx.strokeStyle=i===5?'#fff':'#000'; ctx.stroke(SIG[i]); ctx.restore();
+    ctx.restore();
+  }
+  function frame(t){
+    const s=t/1000;
+    ctx.setTransform(D,0,0,D,0,0); ctx.clearRect(0,0,W,H);
+    const land=W>H, cx=land?W*.3:W/2, cy=land?H*.58:H*.3, R=Math.min(land?H*.18:W*.2,120);
+    for(let i=0;i<7;i++){
+      const a=(i/7)*Math.PI*2+s*(still?0:.25), rx=R*2.05, ry=R*.8;
+      const x=cx+Math.cos(a)*rx, y=cy-R*.55+Math.sin(a)*ry;
+      if(Math.sin(a)<0) sigil(i,x,y,R/110,Math.sin(s+i)*.12);
+    }
+    pot(cx,cy,R,still?0:s);
+    for(let i=0;i<7;i++){
+      const a=(i/7)*Math.PI*2+s*(still?0:.25), rx=R*2.05, ry=R*.8;
+      const x=cx+Math.cos(a)*rx, y=cy-R*.55+Math.sin(a)*ry;
+      if(Math.sin(a)>=0) sigil(i,x,y,R/95,Math.sin(s+i)*.12);
+    }
+    if(!still) requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>
