@@ -57,7 +57,7 @@ const closeSheet = () => $('veil').classList.remove('on');
 
 // A short tip shown once ever, the first time something happens.
 function tipOnce(key, html) {
-  if (save.tips[key]) return;
+  if (save.tips[key] || (G && G.tut)) return;
   save.tips[key] = 1; writeSave();
   const t = $('tip');
   t.innerHTML = `${html}<button class="linkbtn" type="button">Got it</button>`;

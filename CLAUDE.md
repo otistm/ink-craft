@@ -23,6 +23,7 @@ Otis is the designer. He doesn't read code. He judges changes by playing them on
 | ui.js | The gauntlet in progress (`run`), the duel (`G`), the save, animation helpers (`anim`, `squash`, `nope`, `floatAt`), screens, overlay cards (`sheet`), one-time tips (`tipOnce`) |
 | duel.js | The duel screen: rendering both sides, tapping and targeting, the info strip, animating the events the rules report, the rival's turn, pause |
 | screens.js | Home, the oath card, the pit intro, spoils, the satchel, the Grimoire, how to play, victory and defeat, saving and resuming the gauntlet |
+| coach.js | The tutorial: `TUT` steps, Wick's tip bubble, the fixed practice duel against the straw dummy |
 | main.js | Startup (always last) |
 
 ## How it plays
@@ -36,6 +37,15 @@ Otis is the designer. He doesn't read code. He judges changes by playing them on
 - **The rival's brain** (`aiChoose`) tries every legal move on a copy of the duel, scores the result with `evaluate`, and plays the best one until nothing helps. It rolls different dice in its copies so it can't peek at random outcomes.
 - **Balance check:** `node tools/check.js` has the rival brain duel itself (every lord against every other) and run 40 gauntlets per lord. At 0.1.0, lord-against-lord win rates are about 44 to 58% (Morrigan highest), and a bot wins the gauntlet 28 to 65% of the time. A thoughtful human should do better. Re-run it after changing numbers and tell Otis how the rates moved.
 
+## Tutorial
+- A fresh player sees **Learn to brew** at the top of the home screen: a practice duel with Wick, keeper of the Undercroft, against his straw dummy (12 health, only summons Sprouts). Afterwards it's a link next to How to play.
+- The hands and satchels are fixed (`startTutorial` in coach.js) so it always plays the same and always ends with a Wildfire win on turn 3. The player plays as Ignis.
+- The duel reports moments with `coach(event)`: `summon`, `stir`, `brewReady`, `cast`, `attack`, `endTurn`, `myTurn`.
+- Each step in `TUT` has `when` (the event that shows it), `until` (the event that moves on, or `next` for an explanation), `allow` (the only moves allowed while it's up; anything else shakes the tip), `target` (what gets the pulsing outline) and `pos` (`top` or `mid`).
+- Tips use `bubble()`: a reading ring fills for 2.5 to 7 seconds, then turns into an x. On an explanation the x moves on; on an action step it just hides the tip until you try something.
+- Nothing is saved during the tutorial (`run` is null), so a gauntlet in progress is never touched. Finishing sets `save.tutDone` and marks the first-duel tips as seen.
+- If you rename a screen element a step targets, change a starting card, or change when those events fire, update `TUT` and replay the tutorial.
+
 ## Every change
 1. Work on a new branch, never directly on `main`.
 2. Bump `VERSION` in `play/js/config.js` (patch for fixes, minor for features) and add a line to `CHANGELOG.md` in plain language.
@@ -43,7 +53,7 @@ Otis is the designer. He doesn't read code. He judges changes by playing them on
 4. Test locally: run `python -m http.server 8030` in the repo folder and open http://localhost:8030/play/ at a phone size (390 × 844). Also check a small phone (375 × 667) and a tall, wide screen (a foldable, about 640 × 860): the hand must never cover the End turn button.
 
 ## Protect players' saved progress
-- `inkcraft-save`: `{ trophies: [7 bools], recipes: { id: true }, tips: {} }`, one trophy per lord by position in `LORDS`. Add new lords at the end.
+- `inkcraft-save`: `{ trophies: [7 bools], recipes: { id: true }, tips: {}, tutDone }`, one trophy per lord by position in `LORDS`. Add new lords at the end. `tutDone` was added in 0.2.0; saves without it just show the tutorial.
 - `inkcraft-run`: `{ v: 1, run, phase, G, offer, at }`. `run` is the gauntlet (`newRun`), `G` the duel in progress (plain data, including its random seed `rs`). If you change either shape in a way a default can't cover, bump `v` and make `loadRun()` convert or ignore older ones.
 - Never rename a lord `id`, element key, card `id`, recipe `id`, keyword or champion `id`; saves store them.
 
@@ -59,7 +69,8 @@ Otis is the designer. He doesn't read code. He judges changes by playing them on
 - Writing: sentence case, short and plain, numbers as digits, no jargon.
 
 ## Smoke test
-- The front page shows the bubbling cauldron with sigils circling it and a Play button. Play opens the home screen with all seven lords.
+- The front page shows the bubbling cauldron with sigils circling it and a Play button. Play opens the home screen with Learn to brew on top (for a fresh player) and all seven lords.
+- Learn to brew: Wick's tips walk through summoning, attacking, Ember and Salt into Firebolt, the oath power, and Wildfire, which wins. Tapping End turn out of order shakes the tip. Well brewed goes back home, Wildfire is in the Grimoire, and Learn to brew is now a link.
 - Tapping a lord opens its oath card (power, what the oath binds you to, recipes found). Swear the oath: the pit intro shows 5 dots with a crown, the rival, both healths and 3 lives.
 - Enter the pit: cards fan into your hand. Tap a reagent: the info strip explains it and "Add to cauldron" drops it in. Tap a spell with a full enough cauldron: the strip says what the brew adds. Tap a target: it pours, numbers float up.
 - The right three reagents make a recipe: "New recipe: …" appears, and it's in the Grimoire afterwards.

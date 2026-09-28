@@ -39,6 +39,13 @@ function renderTitle() {
   G = null; busy = false;
   const list = $('lords'), R = loadRun();
   list.innerHTML = '';
+  if (!save.tutDone) {
+    const t = document.createElement('button');
+    t.type = 'button'; t.className = 'event lord learn';
+    t.innerHTML = `<div class="tw-wrap">${WICK}</div><div class="ev"><i>Start here · about 3 minutes</i><b>Learn to brew</b><span>A practice duel with Wick, keeper of the Undercroft.</span></div>`;
+    t.onclick = startTutorial;
+    list.appendChild(t);
+  }
   E.LORDS.forEach((L, i) => {
     const won = save.trophies[i], saved = R && R.run.lord === i;
     const b = document.createElement('button');
@@ -51,7 +58,8 @@ function renderTitle() {
     list.appendChild(b);
   });
   const found = Object.keys(save.recipes).filter(id => E.RECIPE[id]).length, wins = save.trophies.filter(Boolean).length;
-  $('homeStats').innerHTML = `${wins} of 7 trophies · <button class="linkbtn" id="bookBtn0">Grimoire</button> ${found} of ${E.RECIPES.length} recipes · <button class="linkbtn" id="howBtn">How to play</button>`;
+  $('homeStats').innerHTML = `${wins} of 7 trophies · <button class="linkbtn" id="bookBtn0">Grimoire</button> ${found} of ${E.RECIPES.length} recipes · <button class="linkbtn" id="howBtn">How to play</button>${save.tutDone ? ' · <button class="linkbtn" id="tutBtn">Learn to brew</button>' : ''}`;
+  if (save.tutDone) $('tutBtn').onclick = startTutorial;
   $('bookBtn0').onclick = () => showGrimoire();
   $('howBtn').onclick = () => showHow();
   show('title');
@@ -127,10 +135,19 @@ function showSatchel(back) {
 async function finishDuel() {
   busy = true;
   const won = G.win === 0;
+  if (G.tut) hideCoach();
   await sleep(500);
   if (won) await banner('Victory');
   else await banner('Defeated');
   busy = false;
+  if (G.tut) {
+    if (won) return finishTutorial(true);
+    G = null;
+    sheet(`<h2>The dummy won</h2><p>Even straw gets lucky. Want another go?</p><button class="btn" id="tutAgain">Try again</button><button class="btn ghost" id="tutHome">Back to the home screen</button>`, false);
+    $('tutAgain').onclick = startTutorial;
+    $('tutHome').onclick = () => { closeSheet(); renderTitle(); };
+    return;
+  }
   const alive = E.afterDuel(run, won);
   const found = duelFound.slice();
   G = null;
